@@ -1,0 +1,13 @@
+[package]
+name = "wowo_tetris"
+version = "0.0.9"
+authors = ["Wowo"]
+
+[[bin]]
+name = "wowo_tetris"
+path = "src/main.rs"
+
+[dependencies]
+piston_window = "0.64.0"
+find_folder = "0.3.0"
+rand = "0.5.5"
