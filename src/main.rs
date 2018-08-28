@@ -5,7 +5,7 @@ extern crate rand;
 use piston_window::*;
 
 mod app;
-mod config;
+use app::config;
 
 use app::timers::*;
 
@@ -22,7 +22,7 @@ fn main() {
     let heigth: u8 = config.read("height").parse::<u8>().unwrap();
 
     let mut window: PistonWindow =
-        WindowSettings::new("WowoTetris", [width as u32 * size, heigth as u32 * size])
+        WindowSettings::new("WowoBomberman", [width as u32 * size, heigth as u32 * size])
             .opengl(opengl)
             .vsync(true)
             .exit_on_esc(true)
@@ -33,10 +33,12 @@ fn main() {
         size,
         width,
         heigth,
-        config.read_color("background_color"),
+        config.read_color("background_color"), //random values
         config.read_color("border_color"),
-        config.read_color("active_color"),
-        config.read_color("taken_color"),
+        config.read_color("border_color"),
+        config.read_color("border_color"),
+        config.read_color("border_color"),
+        config.read_color("border_color"),
         config.read("offset").parse::<u8>().unwrap(),
     );
 

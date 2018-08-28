@@ -1,15 +1,14 @@
-pub enum State{
+pub enum State {
     Free,
-    Taken,
-    Active
+    Fire,
+    Obstacle,
+    Block,
 }
 
-impl Copy for State {
+impl Copy for State {}
 
-}
-
-impl Clone for State{
-    fn clone(&self) -> State{
+impl Clone for State {
+    fn clone(&self) -> State {
         *self
     }
 }
