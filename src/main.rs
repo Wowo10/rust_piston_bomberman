@@ -40,6 +40,7 @@ fn main() {
         config.read_color("border_color"),
         config.read_color("border_color"),
         config.read("offset").parse::<u8>().unwrap(),
+        1
     );
 
     while let Some(e) = window.next() {

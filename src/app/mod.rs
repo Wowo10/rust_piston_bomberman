@@ -17,6 +17,8 @@ mod constants;
 mod vector_operations;
 use self::constants::Constants;
 
+mod player;
+
 pub struct App {
     pub scene: Vec<Vec<State>>,
 
@@ -29,6 +31,7 @@ pub struct App {
     pub exit: bool,
     pub score: u32,
 
+    pub players: Vec<player::Player>,
     pub settings: Constants,
 }
 
@@ -44,15 +47,17 @@ impl App {
         color_player1: [f32; 4],
         color_player2: [f32; 4],
         offset: u8,
+        players_amount: u8,
     ) -> Self {
         let mut temp = App {
-            scene: Vec::new(),            
+            scene: Vec::new(),
             renderframes: 0,
             updateframes: 0,
             timers: timers::new_timers(),
             activeblock: Vec::new(),
             exit: false,
             score: 0,
+            players: Vec::new(),
 
             settings: Constants {
                 color_background: color_background,
@@ -66,17 +71,21 @@ impl App {
             },
         };
 
-        temp.init(width, height);
+        temp.init(width, height, players_amount);
         temp
     }
 
-    fn init(&mut self, width: u8, height: u8) {
+    fn init(&mut self, width: u8, height: u8, players_amount: u8) {
         for _ in 0..width {
             let mut v: Vec<State> = Vec::new();
             for _ in 0..height {
                 v.push(State::Free);
             }
             &self.scene.push(v);
+        }
+
+        for i in 0..players_amount {
+            //add player!
         }
     }
 
@@ -112,7 +121,8 @@ impl App {
 
             for i in 0..width {
                 for j in 0..heigth {
-                    let transposition = c.transform.trans(size * 2.0 * i as f64, size * 2.0 * j as f64);
+                    let transposition = c.transform
+                        .trans(size * 2.0 * i as f64, size * 2.0 * j as f64);
 
                     rectangle(self.settings.color_border, square, transposition, g);
 
@@ -134,6 +144,8 @@ impl App {
         // for block in &mut self.activeblock {
         //     self.scene[block[0] as usize][block[1] as usize] = State::Active;
         // }
+
+        self.exit = self.players.is_empty();
     }
 
     pub fn handle_input(&mut self, key: Key) {
@@ -147,81 +159,4 @@ impl App {
             _ => {}
         }
     }
-
-    // fn able_move_left(&self) -> bool {
-    //     for block in &self.activeblock {
-    //         let x_pos = block[0];
-    //         if x_pos == 0 {
-    //             return false;
-    //         }
-    //         match &self.scene[(x_pos - 1) as usize][block[1] as usize] {
-    //             State::Taken => {
-    //                 return false;
-    //             }
-    //             _ => {}
-    //         }
-    //     }
-    //     true
-    // }
-
-    // fn move_left(&mut self) {
-    //     let possible = self.able_move_left();
-    //     if possible {
-    //         for block in &mut self.activeblock {
-    //             block[0] -= 1;
-    //         }
-    //     }
-    // }
-
-    // fn able_move_right(&self) -> bool {
-    //     for block in &self.activeblock {
-    //         let x_pos = block[0];
-    //         if x_pos == (&self.scene.len() - 1) as u8 {
-    //             return false;
-    //         }
-    //         match &self.scene[(x_pos + 1) as usize][block[1] as usize] {
-    //             State::Taken => {
-    //                 return false;
-    //             }
-    //             _ => {}
-    //         }
-    //     }
-    //     true
-    // }
-
-    // fn move_right(&mut self) {
-    //     let possible = self.able_move_right();
-    //     if possible {
-    //         for block in &mut self.activeblock {
-    //             block[0] += 1;
-    //         }
-    //     }
-    // }
-
-    // fn able_move_down(&self) -> bool {
-    //     for block in &self.activeblock {
-    //         let y_pos = block[1];
-    //         if y_pos == (&self.scene[0].len() - 1) as u8 {
-    //             return false;
-    //         }
-    //         match &self.scene[block[0] as usize][(block[1] + 1) as usize] {
-    //             State::Taken => {
-    //                 return false;
-    //             }
-    //             _ => {}
-    //         }
-    //     }
-    //     true
-    // }
-
-    // fn move_down(&mut self) {
-    //     let possible = self.able_move_down();
-
-    //     if possible {
-    //         for block in &mut self.activeblock {
-    //             block[1] += 1;
-    //         }
-    //     }
-    //     self.timers.updatetimer.reset();
-    // }
 }
