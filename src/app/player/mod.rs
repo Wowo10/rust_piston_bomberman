@@ -1,8 +1,9 @@
 mod control;
+use piston_window::*;
 
 pub struct Player {
-    position: [u8; 2],
-    controls: control::Control,
+    pub position: [u8; 2],
+    pub controls: control::Control,
 }
 
 impl Player {
@@ -74,4 +75,14 @@ impl Player {
     //     }
     //     self.timers.updatetimer.reset();
     // }
+}
+
+pub fn CreateControls(index: u8) -> control::Control{ //hardcoded for 2 players
+    control::Control{
+        up_button: if index == 0 {Key::Up} else {Key::W},
+        down_button: if index == 0 {Key::Down} else {Key::S},
+        left_button: if index == 0 {Key::Left} else {Key::A},
+        right_button: if index == 0 {Key::Right} else {Key::D},
+        bomb_button: if index == 0 {Key::RCtrl} else {Key::LCtrl}
+    }
 }

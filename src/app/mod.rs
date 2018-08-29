@@ -85,7 +85,16 @@ impl App {
         }
 
         for i in 0..players_amount {
-            //add player!
+            //read us from config!
+
+            let temp: player::Player;
+
+            temp = player::Player{
+                position: if i == 0 {[0,0]} else {[self.scene.len() as u8, 0]},
+                controls: player::CreateControls(i),
+            };
+
+            self.players.push(temp);
         }
     }
 

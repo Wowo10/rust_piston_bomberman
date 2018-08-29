@@ -9,3 +9,14 @@ block_color;1.0,0.0,0.0;RED
 player1_color;0.0,0.0,1.0;BLUE
 player2_color;0.5,0.0,0.5;PINK
 players;2;number of players
+PLAYER;CONTROLS;NOT TO READ
+player1_up;UP;
+player1_down;DOWN;
+player1_left;LEFT;
+player1_right;RIGHT;
+player1_bomb;RCTRL;
+player2_up;W;
+player2_down;S;
+player2_left;A;
+player2_right;D;
+player2_bomb;LCTRL;
