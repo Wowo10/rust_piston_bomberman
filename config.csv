@@ -6,6 +6,7 @@ offset;4;should be even
 background_color;0.0,0.0,0.0;BLACK
 border_color;0.0,1.0,0.0;GREEN
 block_color;1.0,0.0,0.0;RED
+obstacle_color;1.0,0.0,0.0;RED
 player1_color;0.0,0.0,1.0;BLUE
 player2_color;0.5,0.0,0.5;PINK
 players;2;number of players

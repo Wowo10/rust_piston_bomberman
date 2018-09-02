@@ -4,6 +4,7 @@ use piston_window::*;
 pub struct Player {
     pub position: [u8; 2],
     pub controls: control::Control,
+    pub color: [f32; 4],
 }
 
 impl Player {

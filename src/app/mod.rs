@@ -89,8 +89,17 @@ impl App {
 
             let temp: player::Player;
 
-            temp = player::Player{
-                position: if i == 0 {[0,0]} else {[self.scene.len() as u8, 0]},
+            temp = player::Player {
+                position: if i == 0 {
+                    [0, 0]
+                } else {
+                    [(self.scene.len() - 1) as u8, 0]
+                },
+                color: if i == 0 {
+                    self.settings.color_player1
+                } else {
+                    self.settings.color_player2
+                },
                 controls: player::CreateControls(i),
             };
 
@@ -125,6 +134,8 @@ impl App {
 
         let scene = &self.scene;
 
+        let players = &self.players;
+
         window.draw_2d(&e, |c, g| {
             clear(self.settings.color_border, g);
 
@@ -135,15 +146,32 @@ impl App {
 
                     rectangle(self.settings.color_border, square, transposition, g);
 
-                    let color = match &scene[i][j] {
+                    let mut color = match &scene[i][j] {
                         _ => self.settings.color_background,
                     };
+
+                    for player in players {
+                        if [i as u8, j as u8] == player.get_position() {
+                            color = player.color;
+                        }
+                    }
 
                     rectangle(color, squareinner, transposition, g);
                 }
             }
         });
     }
+
+    // fn get_positions(&self) -> Vec<[u8; 2]>{
+
+    //     let mut tempvec: Vec<[u8; 2]> = Vec::new();
+
+    //     for player in &self.players{
+    //         tempvec.push(player.get_position());
+    //     }
+
+    //     tempvec
+    // }
 
     pub fn update(&mut self, _args: UpdateArgs) {
         self.updateframes += 1;
