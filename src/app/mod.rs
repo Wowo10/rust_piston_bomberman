@@ -76,10 +76,19 @@ impl App {
     }
 
     fn init(&mut self, width: u8, height: u8, players_amount: u8) {
+        let mut rng = thread_rng();
+
         for _ in 0..width {
             let mut v: Vec<State> = Vec::new();
             for _ in 0..height {
-                v.push(State::Free);
+                let state: u8 = rng.gen(); //bad idea -> TODO: read it from file
+                let state = state % 3;
+
+                v.push(match state { 
+                    //0 => State::Block,
+                    //1 => State::Obstacle,
+                    _ => State::Free,
+                });
             }
             &self.scene.push(v);
         }
@@ -147,6 +156,9 @@ impl App {
                     rectangle(self.settings.color_border, square, transposition, g);
 
                     let mut color = match &scene[i][j] {
+                        State::Block => self.settings.color_block,
+                        State::Obstacle => self.settings.color_obstacle,
+
                         _ => self.settings.color_background,
                     };
 
@@ -162,25 +174,11 @@ impl App {
         });
     }
 
-    // fn get_positions(&self) -> Vec<[u8; 2]>{
-
-    //     let mut tempvec: Vec<[u8; 2]> = Vec::new();
-
-    //     for player in &self.players{
-    //         tempvec.push(player.get_position());
-    //     }
-
-    //     tempvec
-    // }
 
     pub fn update(&mut self, _args: UpdateArgs) {
         self.updateframes += 1;
 
         self.clear_board();
-
-        // for block in &mut self.activeblock {
-        //     self.scene[block[0] as usize][block[1] as usize] = State::Active;
-        // }
 
         self.exit = self.players.is_empty();
     }
@@ -239,7 +237,7 @@ impl App {
     fn able_move_right(&self, player_index: usize) -> bool {
         let [player_pos_x, player_pos_y] = self.players[player_index].get_position();
 
-        if player_pos_x as usize > (self.scene.len() - 1) {
+        if player_pos_x as usize >= (self.scene.len() - 1) {
             return false;
         }
 

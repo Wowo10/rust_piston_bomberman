@@ -5,8 +5,8 @@ height;20;
 offset;4;should be even
 background_color;0.0,0.0,0.0;BLACK
 border_color;0.0,1.0,0.0;GREEN
-block_color;1.0,0.0,0.0;RED
-obstacle_color;1.0,0.0,0.0;RED
+block_color;1.0,0.7,0.0;
+obstacle_color;0.8,0.8,0.8;GREY
 player1_color;0.0,0.0,1.0;BLUE
 player2_color;0.5,0.0,0.5;PINK
 players;2;number of players
