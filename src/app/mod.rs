@@ -100,7 +100,7 @@ impl App {
                 } else {
                     self.settings.color_player2
                 },
-                controls: player::CreateControls(i),
+                controls: player::create_controls(i),
             };
 
             self.players.push(temp);
@@ -186,14 +186,126 @@ impl App {
     }
 
     pub fn handle_input(&mut self, key: Key) {
-        match key {
-            Key::Left | Key::A => {}
-            Key::Right | Key::D => {}
-            Key::Down | Key::S => {}
-            Key::Up | Key::W => {}
-            Key::Space => {}
+        for i in 0..self.players.len() {
+            if key == self.players[i].controls.up_button {
+                if self.able_move_up(i) {
+                    self.players[i].move_up();
+                }
+            } else if key == self.players[i].controls.down_button {
+                if self.able_move_down(i) {
+                    self.players[i].move_down();
+                }
+            } else if key == self.players[i].controls.left_button {
+                if self.able_move_left(i) {
+                    self.players[i].move_left();
+                }
+            } else if key == self.players[i].controls.right_button {
+                if self.able_move_right(i) {
+                    self.players[i].move_right();
+                }
+            } else if key == self.players[i].controls.bomb_button {
+                if true {
+                    //also check for timers etc
+                    self.players[i].lay_bomb();
+                }
+            }
+        }
+    }
 
+    fn able_move_left(&self, player_index: usize) -> bool {
+        let [player_pos_x, player_pos_y] = self.players[player_index].get_position();
+
+        if player_pos_x <= 0 {
+            return false;
+        }
+
+        match &self.scene[(player_pos_x - 1) as usize][player_pos_y as usize] {
+            State::Block | State::Obstacle => {
+                return false;
+            }
             _ => {}
         }
+
+        for player in &self.players {
+            let [other_player_x, other_player_y] = player.get_position();
+
+            if other_player_y == player_pos_y && player_pos_x - 1 == other_player_x {
+                return false;
+            }
+        }
+
+        true
+    }
+    fn able_move_right(&self, player_index: usize) -> bool {
+        let [player_pos_x, player_pos_y] = self.players[player_index].get_position();
+
+        if player_pos_x as usize > (self.scene.len() - 1) {
+            return false;
+        }
+
+        match &self.scene[(player_pos_x + 1) as usize][player_pos_y as usize] {
+            State::Block | State::Obstacle => {
+                return false;
+            }
+            _ => {}
+        }
+
+        for player in &self.players {
+            let [other_player_x, other_player_y] = player.get_position();
+
+            if other_player_y == player_pos_y && player_pos_x + 1 == other_player_x {
+                return false;
+            }
+        }
+
+        true
+    }
+    fn able_move_up(&self, player_index: usize) -> bool {
+        let [player_pos_x, player_pos_y] = self.players[player_index].get_position();
+
+        if player_pos_y <= 0 {
+            return false;
+        }
+
+        match &self.scene[player_pos_x as usize][(player_pos_y - 1) as usize] {
+            State::Block | State::Obstacle => {
+                return false;
+            }
+            _ => {}
+        }
+
+        for player in &self.players {
+            let [other_player_x, other_player_y] = player.get_position();
+
+            if player_pos_x == other_player_x && other_player_y == player_pos_y - 1 {
+                return false;
+            }
+        }
+
+        true
+    }
+    fn able_move_down(&self, player_index: usize) -> bool {
+        let [player_pos_x, player_pos_y] = self.players[player_index].get_position();
+
+        if player_pos_y as usize >= self.scene[0].len() - 1 {
+            return false;
+        }
+
+        match &self.scene[player_pos_x as usize][(player_pos_y + 1) as usize] {
+            State::Block | State::Obstacle => {
+                return false;
+            }
+            _ => {}
+        }
+
+        for player in &self.players {
+            let [other_player_x, other_player_y] = player.get_position();
+
+            if player_pos_x == other_player_x && other_player_y == player_pos_y + 1 {
+                return false;
+            }
+        }
+
+        true
     }
 }
