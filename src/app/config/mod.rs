@@ -4,27 +4,25 @@ use std::io::prelude::*;
 use std::io::{BufRead, BufReader, SeekFrom};
 
 pub struct Config {
-    file: File,
+    config_file: File,
     buffer: HashMap<String, String>,
 }
 
 impl Config {
-    pub fn create(name: &'static str) -> Self {
+    pub fn create(config_name: &'static str) -> Self {
         Config {
-            file: File::open(name).unwrap(),
+            config_file: File::open(config_name).unwrap(),
             buffer: HashMap::new(),
         }
     }
 
     pub fn read(&mut self, key: &'static str) -> String {
-        self.file.seek(SeekFrom::Start(0)).unwrap();
+        self.config_file.seek(SeekFrom::Start(0)).unwrap();
 
-        let match_value = self.buffer.get(key).cloned();
-
-        match match_value {
+        match self.buffer.get(key).cloned() {
             Some(review) => review.to_string(),
             None => {
-                let mut reader = BufReader::new(&self.file);
+                let mut reader = BufReader::new(&self.config_file);
 
                 for line in reader.lines() {
                     let [data_key, data_value] = Config::split_data(line.unwrap());

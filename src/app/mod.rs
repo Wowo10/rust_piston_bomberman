@@ -13,6 +13,8 @@ pub mod config;
 pub mod timers;
 use self::timers::Timers;
 
+mod map;
+
 mod constants;
 mod vector_operations;
 use self::constants::Constants;
@@ -71,28 +73,60 @@ impl App {
             },
         };
 
-        temp.init(width, height, players_amount);
+        //temp.init(width, height, players_amount);
+        temp.init_file(players_amount);
         temp
     }
 
     fn init(&mut self, width: u8, height: u8, players_amount: u8) {
+        self.gen_map(width, height);
+
+        self.gen_players(players_amount);
+    }
+
+    fn init_file(&mut self, players_amount: u8) {
+        self.read_map();
+
+        self.gen_players(players_amount);
+    }
+
+    fn gen_map(&mut self, width: u8, height: u8) {
         let mut rng = thread_rng();
 
         for _ in 0..width {
             let mut v: Vec<State> = Vec::new();
             for _ in 0..height {
-                let state: u8 = rng.gen(); //bad idea -> TODO: read it from file
+                let state: u8 = rng.gen();
                 let state = state % 3;
 
-                v.push(match state { 
-                    //0 => State::Block,
-                    //1 => State::Obstacle,
+                v.push(match state {
+                    0 => State::Block,
+                    1 => State::Obstacle,
                     _ => State::Free,
                 });
             }
             &self.scene.push(v);
         }
+    }
 
+    fn read_map(&mut self) {
+        let temp = map::read_map("map.csv");
+
+        for i in 0..temp[0].len() {
+            let mut v: Vec<State> = Vec::new();
+            for j in 0..temp.len() {
+                v.push(match temp[j][i] {
+                    '1' => State::Block,
+                    '2' => State::Obstacle,
+
+                    _ => State::Free, //'0' | '3'
+                });
+            }
+            &self.scene.push(v);
+        }
+    }
+
+    fn gen_players(&mut self, players_amount: u8) {
         for i in 0..players_amount {
             //read us from config!
 
@@ -174,11 +208,8 @@ impl App {
         });
     }
 
-
     pub fn update(&mut self, _args: UpdateArgs) {
         self.updateframes += 1;
-
-        self.clear_board();
 
         self.exit = self.players.is_empty();
     }

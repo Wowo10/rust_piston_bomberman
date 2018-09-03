@@ -33,7 +33,7 @@ fn main() {
         size,
         width,
         heigth,
-        config.read_color("background_color"), //random values
+        config.read_color("background_color"),
         config.read_color("border_color"),
         config.read_color("block_color"),
         config.read_color("obstacle_color"),
