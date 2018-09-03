@@ -28,10 +28,7 @@ pub struct App {
     pub updateframes: usize,
     pub timers: Timers,
 
-    pub activeblock: Vec<[u8; 2]>,
-
     pub exit: bool,
-    pub score: u32,
 
     pub players: Vec<player::Player>,
     pub settings: Constants,
@@ -56,9 +53,7 @@ impl App {
             renderframes: 0,
             updateframes: 0,
             timers: timers::new_timers(),
-            activeblock: Vec::new(),
             exit: false,
-            score: 0,
             players: Vec::new(),
 
             settings: Constants {
@@ -144,19 +139,10 @@ impl App {
                     self.settings.color_player2
                 },
                 controls: player::create_controls(i),
+                statistics: player::Statistics::create(),
             };
 
             self.players.push(temp);
-        }
-    }
-
-    fn clear_board(&mut self) {
-        for row in &mut self.scene {
-            for state in row {
-                match *state {
-                    _ => {}
-                }
-            }
         }
     }
 
@@ -241,6 +227,7 @@ impl App {
         }
     }
 
+    //Move checkings
     fn able_move_left(&self, player_index: usize) -> bool {
         let [player_pos_x, player_pos_y] = self.players[player_index].get_position();
 

@@ -76,5 +76,5 @@ fn main() {
         duration
     );
 
-    println!("\nGame Over! Score: {}", app.score);
+    println!("\nGame Over!");
 }
