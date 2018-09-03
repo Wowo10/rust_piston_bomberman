@@ -149,7 +149,7 @@ impl App {
     pub fn render(&mut self, window: &mut PistonWindow, e: Input, _args: RenderArgs) {
         self.renderframes += 1;
 
-        let square = rectangle::square(0.0, 0.0, self.settings.size as f64);
+        //let square = rectangle::square(0.0, 0.0, self.settings.size as f64);
         let squareinner = rectangle::square(
             (self.settings.offset / 2) as f64,
             (self.settings.offset / 2) as f64,
@@ -173,7 +173,7 @@ impl App {
                     let transposition = c.transform
                         .trans(size * 2.0 * i as f64, size * 2.0 * j as f64);
 
-                    rectangle(self.settings.color_border, square, transposition, g);
+                    //rectangle(self.settings.color_border, square, transposition, g);
 
                     let mut color = match &scene[i][j] {
                         State::Block => self.settings.color_block,
