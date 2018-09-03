@@ -113,7 +113,6 @@ impl App {
                 v.push(match temp[j][i] {
                     '1' => State::Block,
                     '2' => State::Obstacle,
-
                     _ => State::Free, //'0' | '3'
                 });
             }
@@ -228,6 +227,29 @@ impl App {
     }
 
     //Move checkings
+    fn check_scene_state(&self, pos_x: usize, pos_y: usize) -> bool {
+        match &self.scene[pos_x][pos_y] {
+            State::Block | State::Obstacle | State::Bomb => true,
+            _ => false,
+        }
+    }
+
+    fn check_other_players(&self, pos_x: u8, pos_y: u8) -> bool {
+        for player in &self.players {
+            let [other_player_x, other_player_y] = player.get_position();
+
+            if pos_x == other_player_x && other_player_y == pos_y {
+                return true;
+            }
+        }
+        false
+    }
+
+    fn check_scene_and_players(&self, pos_x: u8, pos_y: u8) -> bool {
+        self.check_scene_state(pos_x as usize, pos_y as usize)
+            || self.check_other_players(pos_x, pos_y)
+    }
+
     fn able_move_left(&self, player_index: usize) -> bool {
         let [player_pos_x, player_pos_y] = self.players[player_index].get_position();
 
@@ -235,19 +257,8 @@ impl App {
             return false;
         }
 
-        match &self.scene[(player_pos_x - 1) as usize][player_pos_y as usize] {
-            State::Block | State::Obstacle => {
-                return false;
-            }
-            _ => {}
-        }
-
-        for player in &self.players {
-            let [other_player_x, other_player_y] = player.get_position();
-
-            if other_player_y == player_pos_y && player_pos_x - 1 == other_player_x {
-                return false;
-            }
+        if self.check_scene_and_players(player_pos_x - 1, player_pos_y) {
+            return false;
         }
 
         true
@@ -259,19 +270,8 @@ impl App {
             return false;
         }
 
-        match &self.scene[(player_pos_x + 1) as usize][player_pos_y as usize] {
-            State::Block | State::Obstacle => {
-                return false;
-            }
-            _ => {}
-        }
-
-        for player in &self.players {
-            let [other_player_x, other_player_y] = player.get_position();
-
-            if other_player_y == player_pos_y && player_pos_x + 1 == other_player_x {
-                return false;
-            }
+        if self.check_scene_and_players(player_pos_x + 1, player_pos_y) {
+            return false;
         }
 
         true
@@ -283,19 +283,8 @@ impl App {
             return false;
         }
 
-        match &self.scene[player_pos_x as usize][(player_pos_y - 1) as usize] {
-            State::Block | State::Obstacle => {
-                return false;
-            }
-            _ => {}
-        }
-
-        for player in &self.players {
-            let [other_player_x, other_player_y] = player.get_position();
-
-            if player_pos_x == other_player_x && other_player_y == player_pos_y - 1 {
-                return false;
-            }
+        if self.check_scene_and_players(player_pos_x, player_pos_y - 1) {
+            return false;
         }
 
         true
@@ -307,19 +296,8 @@ impl App {
             return false;
         }
 
-        match &self.scene[player_pos_x as usize][(player_pos_y + 1) as usize] {
-            State::Block | State::Obstacle => {
-                return false;
-            }
-            _ => {}
-        }
-
-        for player in &self.players {
-            let [other_player_x, other_player_y] = player.get_position();
-
-            if player_pos_x == other_player_x && other_player_y == player_pos_y + 1 {
-                return false;
-            }
+        if self.check_scene_and_players(player_pos_x, player_pos_y + 1) {
+            return false;
         }
 
         true
