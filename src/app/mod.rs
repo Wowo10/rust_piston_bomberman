@@ -104,6 +104,12 @@ impl App {
         }
     }
 
+    /// 0 for free
+    /// 1 for random
+    /// 2 for block
+    /// 3 for obstacle
+    /// 4 for playerpos (to be implemented)
+    ///
     fn read_map(&mut self) {
         let temp = map::read_map("map.csv");
 
@@ -111,9 +117,21 @@ impl App {
             let mut v: Vec<State> = Vec::new();
             for j in 0..temp.len() {
                 v.push(match temp[j][i] {
-                    '1' => State::Block,
-                    '2' => State::Obstacle,
-                    _ => State::Free, //'0' | '3'
+                    '1' => {
+                        let mut rng = thread_rng();
+
+                        let rand_state: u8 = rng.gen();
+
+                        match rand_state % 3 {
+                            0 => State::Free,
+                            1 => State::Block,
+                            2 => State::Obstacle,
+                            _ => State::Free,
+                        }
+                    }
+                    '2' => State::Block,
+                    '3' => State::Obstacle,
+                    _ => State::Free, //'0' | '4'
                 });
             }
             &self.scene.push(v);
