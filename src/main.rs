@@ -65,14 +65,14 @@ fn main() {
         };
     }
 
-    let duration = start.get_elapsed();
+    let duration = start.get_elapsed() as f64 / 1000.0;
 
     println!(
         "update: {}, render: {}, update/s:{}, render/s:{}, duration:{}ms",
         app.updateframes,
         app.renderframes,
-        app.updateframes / ((duration / 1000) as usize),
-        app.renderframes / ((duration / 1000) as usize),
+        (app.updateframes as f64 / duration) as usize,
+        (app.renderframes as f64 / duration) as usize,
         duration
     );
 

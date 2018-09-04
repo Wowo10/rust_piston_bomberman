@@ -229,7 +229,7 @@ impl App {
     //Move checkings
     fn check_scene_state(&self, pos_x: usize, pos_y: usize) -> bool {
         match &self.scene[pos_x][pos_y] {
-            State::Block | State::Obstacle | State::Bomb => true,
+            State::Block | State::Obstacle => true,
             _ => false,
         }
     }

@@ -5,7 +5,6 @@ pub enum State {
     Fire,
     Obstacle,
     Block,
-    Bomb,
 }
 
 impl Copy for State {}
@@ -26,7 +25,6 @@ impl fmt::Debug for State {
                 State::Fire => "Fire",
                 State::Block => "Block",
                 State::Obstacle => "Obstacle",
-                _ => "kek",
             }
         )
     }
