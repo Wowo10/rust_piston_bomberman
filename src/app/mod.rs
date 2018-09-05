@@ -69,39 +69,14 @@ impl App {
         };
 
         //temp.init(width, height, players_amount);
-        temp.init_file(players_amount);
+        temp.init(players_amount);
         temp
     }
 
-    fn init(&mut self, width: u8, height: u8, players_amount: u8) {
-        self.gen_map(width, height);
-
-        self.gen_players(players_amount);
-    }
-
-    fn init_file(&mut self, players_amount: u8) {
+    fn init(&mut self, players_amount: u8) {
         self.read_map();
 
         self.gen_players(players_amount);
-    }
-
-    fn gen_map(&mut self, width: u8, height: u8) {
-        let mut rng = thread_rng();
-
-        for _ in 0..width {
-            let mut v: Vec<State> = Vec::new();
-            for _ in 0..height {
-                let state: u8 = rng.gen();
-                let state = state % 3;
-
-                v.push(match state {
-                    0 => State::Block,
-                    1 => State::Obstacle,
-                    _ => State::Free,
-                });
-            }
-            &self.scene.push(v);
-        }
     }
 
     /// 0 for free
@@ -166,7 +141,6 @@ impl App {
     pub fn render(&mut self, window: &mut PistonWindow, e: Input, _args: RenderArgs) {
         self.renderframes += 1;
 
-        //let square = rectangle::square(0.0, 0.0, self.settings.size as f64);
         let squareinner = rectangle::square(
             (self.settings.offset / 2) as f64,
             (self.settings.offset / 2) as f64,
@@ -189,8 +163,6 @@ impl App {
                 for j in 0..heigth {
                     let transposition = c.transform
                         .trans(size * 2.0 * i as f64, size * 2.0 * j as f64);
-
-                    //rectangle(self.settings.color_border, square, transposition, g);
 
                     let mut color = match &scene[i][j] {
                         State::Block => self.settings.color_block,
