@@ -36,9 +36,8 @@ pub struct App {
 
 impl App {
     pub fn create(
-        size: u32,
-        width: u8,
-        height: u8,
+        max_width: u32,
+        max_height: u32,
         color_background: [f32; 4],
         color_border: [f32; 4],
         color_block: [f32; 4],
@@ -63,20 +62,22 @@ impl App {
                 color_obstacle: color_obstacle,
                 color_player1: color_player1,
                 color_player2: color_player2,
-                size: size,
+                size_x: 1,
+                size_y: 1,
                 offset: offset,
             },
         };
 
-        //temp.init(width, height, players_amount);
-        temp.init(players_amount);
+        let [size_x, size_y] = temp.init(players_amount);
+        temp.settings.size_x = max_width / size_x as u32;
+        temp.settings.size_y = max_height / size_y as u32;
         temp
     }
 
-    fn init(&mut self, players_amount: u8) {
-        self.read_map();
+    fn init(&mut self, players_amount: u8) -> [usize; 2] {
+        self.read_map(players_amount)
 
-        self.gen_players(players_amount);
+        //self.gen_players(players_amount);
     }
 
     /// 0 for free
@@ -85,7 +86,7 @@ impl App {
     /// 3 for obstacle
     /// 4 for playerpos (to be implemented)
     ///
-    fn read_map(&mut self) {
+    fn read_map(&mut self, players_amount: u8) -> [usize; 2] {
         let temp = map::read_map("map.csv");
 
         for i in 0..temp[0].len() {
@@ -106,48 +107,58 @@ impl App {
                     }
                     '2' => State::Block,
                     '3' => State::Obstacle,
-                    _ => State::Free, //'0' | '4'
+                    '4' => {
+                        if players_amount >= self.players.len() as u8 {
+                            &self.add_player([i as u8, j as u8]);
+                        }
+                        State::Free
+                    }
+                    _ => State::Free, //'0'
                 });
             }
             &self.scene.push(v);
         }
+
+        [self.scene.len(), self.scene[0].len()]
     }
 
     fn gen_players(&mut self, players_amount: u8) {
         for i in 0..players_amount {
             //read us from config!
 
-            let temp: player::Player;
+            let len = self.scene.len();
 
-            temp = player::Player {
-                position: if i == 0 {
-                    [0, 0]
-                } else {
-                    [(self.scene.len() - 1) as u8, 0]
-                },
-                color: if i == 0 {
-                    self.settings.color_player1
-                } else {
-                    self.settings.color_player2
-                },
-                controls: player::create_controls(i),
-                statistics: player::Statistics::create(),
-            };
-
-            self.players.push(temp);
+            self.add_player(if i == 0 { [0, 0] } else { [(len - 1) as u8, 0] });
         }
+    }
+
+    fn add_player(&mut self, player_position: [u8; 2]) {
+        let i = self.players.len();
+
+        self.players.push(player::Player {
+            position: player_position,
+            color: if i == 0 {
+                self.settings.color_player1
+            } else {
+                self.settings.color_player2
+            },
+            controls: player::create_controls(i as u8),
+            statistics: player::Statistics::create(),
+        });
     }
 
     pub fn render(&mut self, window: &mut PistonWindow, e: Input, _args: RenderArgs) {
         self.renderframes += 1;
 
-        let squareinner = rectangle::square(
+        let square = [
             (self.settings.offset / 2) as f64,
             (self.settings.offset / 2) as f64,
-            (self.settings.size - self.settings.offset as u32) as f64,
-        );
+            (self.settings.size_x - self.settings.offset as u32) as f64,
+            (self.settings.size_y - self.settings.offset as u32) as f64,
+        ];
 
-        let size = (self.settings.size as f64) / 2.0;
+        let size_x = self.settings.size_x as f64;
+        let size_y = self.settings.size_y as f64;
 
         let width = self.scene.len();
         let heigth = self.scene[0].len();
@@ -161,8 +172,7 @@ impl App {
 
             for i in 0..width {
                 for j in 0..heigth {
-                    let transposition = c.transform
-                        .trans(size * 2.0 * i as f64, size * 2.0 * j as f64);
+                    let transposition = c.transform.trans(size_x * i as f64, size_y * j as f64);
 
                     let mut color = match &scene[i][j] {
                         State::Block => self.settings.color_block,
@@ -177,7 +187,7 @@ impl App {
                         }
                     }
 
-                    rectangle(color, squareinner, transposition, g);
+                    rectangle(color, square, transposition, g);
                 }
             }
         });

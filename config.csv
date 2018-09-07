@@ -1,8 +1,7 @@
 Setting;Value;Comment
-size;20;
-width;30;
-height;20;
-offset;4;should be even
+width;600;
+height;400
+offset;2;should be even
 background_color;0.0,0.0,0.0;BLACK
 border_color;0.0,1.0,0.0;GREEN
 block_color;0.8,0.6,0.0;

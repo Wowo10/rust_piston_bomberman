@@ -17,22 +17,18 @@ fn main() {
 
     let mut config = config::Config::create("config.csv");
 
-    let size: u32 = config.read("size").parse::<u32>().unwrap();
-    let width: u8 = config.read("width").parse::<u8>().unwrap();
-    let heigth: u8 = config.read("height").parse::<u8>().unwrap();
+    let width: u32 = config.read("width").parse::<u32>().unwrap();
+    let height: u32 = config.read("height").parse::<u32>().unwrap();
 
-    let mut window: PistonWindow =
-        WindowSettings::new("WowoBomberman", [width as u32 * size, heigth as u32 * size])
-            .opengl(opengl)
-            .vsync(true)
-            .exit_on_esc(true)
-            .build()
-            .unwrap();
-
+    let mut window: PistonWindow = WindowSettings::new("WowoBomberman", [width, height])
+        .opengl(opengl)
+        .vsync(true)
+        .exit_on_esc(true)
+        .build()
+        .unwrap();
     let mut app = app::App::create(
-        size,
         width,
-        heigth,
+        height,
         config.read_color("background_color"),
         config.read_color("border_color"),
         config.read_color("block_color"),
@@ -68,7 +64,7 @@ fn main() {
     let duration = start.get_elapsed() as f64 / 1000.0;
 
     println!(
-        "update: {}, render: {}, update/s:{}, render/s:{}, duration:{}ms",
+        "update: {}, render: {}, update/s:{}, render/s:{}, duration:{}s",
         app.updateframes,
         app.renderframes,
         (app.updateframes as f64 / duration) as usize,
