@@ -20,6 +20,7 @@ mod vector_operations;
 use self::constants::Constants;
 
 mod player;
+mod bomb;
 
 pub struct App {
     pub scene: Vec<Vec<State>>,
@@ -31,6 +32,7 @@ pub struct App {
     pub exit: bool,
 
     pub players: Vec<player::Player>,
+    pub bombs: Vec<bomb::Bomb>,
     pub settings: Constants,
 }
 
@@ -54,6 +56,7 @@ impl App {
             timers: timers::new_timers(),
             exit: false,
             players: Vec::new(),
+            bombs: Vec::new(),
 
             settings: Constants {
                 color_background: color_background,

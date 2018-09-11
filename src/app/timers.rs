@@ -24,6 +24,16 @@ impl Timer {
     pub fn did_pass(&self, duration: u64) -> bool {
         self.get_elapsed() > duration
     }
+
+    pub fn progress(&self, duration: u64) -> f64 {
+        let percentage = self.get_elapsed() as f64 / duration as f64;
+
+        if percentage > 1.0 {
+            1.0
+        } else {
+            percentage
+        }
+    }
 }
 
 pub struct Timers {
