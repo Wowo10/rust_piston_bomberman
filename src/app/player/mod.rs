@@ -1,16 +1,16 @@
 mod control;
 use piston_window::Key;
 
-pub struct Statistics{
+pub struct Statistics {
     pub bomb_limit: u8,
     pub active_bombs: u8,
 
     pub fire_range: u8,
 }
 
-impl Statistics{
-    pub fn create() -> Self{
-        Statistics{
+impl Statistics {
+    pub fn create() -> Self {
+        Statistics {
             bomb_limit: 1,
             active_bombs: 0,
 
@@ -41,8 +41,14 @@ impl Player {
         self.position[1] += 1;
     }
 
-    pub fn lay_bomb(&self) {
-        println!("Bomb!"); //TODO: this is gonna be challenge
+    pub fn lay_bomb(&mut self) -> bool {
+        let condition = self.statistics.active_bombs < self.statistics.bomb_limit;
+
+        if condition {
+            self.statistics.active_bombs += 1;
+        };
+
+        condition
     }
 
     pub fn get_position(&self) -> [u8; 2] {

@@ -19,8 +19,8 @@ mod constants;
 mod vector_operations;
 use self::constants::Constants;
 
-mod player;
 mod bomb;
+mod player;
 
 pub struct App {
     pub scene: Vec<Vec<State>>,
@@ -79,8 +79,6 @@ impl App {
 
     fn init(&mut self, players_amount: u8) -> [usize; 2] {
         self.read_map(players_amount)
-
-        //self.gen_players(players_amount);
     }
 
     /// 0 for free
@@ -123,16 +121,6 @@ impl App {
         }
 
         [self.scene.len(), self.scene[0].len()]
-    }
-
-    fn gen_players(&mut self, players_amount: u8) {
-        for i in 0..players_amount {
-            //read us from config!
-
-            let len = self.scene.len();
-
-            self.add_player(if i == 0 { [0, 0] } else { [(len - 1) as u8, 0] });
-        }
     }
 
     fn add_player(&mut self, player_position: [u8; 2]) {
@@ -248,9 +236,21 @@ impl App {
         false
     }
 
+    fn check_bombs(&self, pos_x: u8, pos_y: u8) -> bool {
+        for bomb in &self.bombs {
+            let [bomb_x, bomb_y] = bomb.get_position();
+
+            if pos_x == bomb_x && bomb_y == pos_y {
+                return true;
+            }
+        }
+        false
+    }
+
     fn check_scene_and_players(&self, pos_x: u8, pos_y: u8) -> bool {
         self.check_scene_state(pos_x as usize, pos_y as usize)
             || self.check_other_players(pos_x, pos_y)
+            || self.check_bombs(pos_x, pos_y)
     }
 
     fn able_move_left(&self, player_index: usize) -> bool {
