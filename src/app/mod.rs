@@ -18,6 +18,7 @@ mod map;
 mod constants;
 mod vector_operations;
 use self::constants::Constants;
+use self::vector_operations::*;
 
 mod bomb;
 use self::bomb::*;
@@ -181,7 +182,11 @@ impl App {
 
                     for bomb in bombs {
                         if [i as u8, j as u8] == bomb.get_position() {
-                            color = self.settings.color_bomb;
+                            color = color_lerp(
+                                self.settings.color_bomb,
+                                self.settings.color_fire,
+                                bomb.get_percentage(),
+                            );
                         }
                     }
 
@@ -226,7 +231,7 @@ impl App {
                     //also check for timers etc
                     if self.players[i].lay_bomb() {
                         self.bombs
-                            .push(Bomb::create(self.players[i].get_position()));
+                            .push(Bomb::create(self.players[i].get_position(), 5));
                     };
                 }
             }
