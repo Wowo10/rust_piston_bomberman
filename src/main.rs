@@ -35,6 +35,8 @@ fn main() {
         config.read_color("obstacle_color"),
         config.read_color("player1_color"),
         config.read_color("player2_color"),
+        config.read_color("bomb_color"),
+        config.read_color("fire_color"),
         config.read("offset").parse::<u8>().unwrap(),
         config.read("players").parse::<u8>().unwrap(),
     );

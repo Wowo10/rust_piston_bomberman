@@ -20,7 +20,9 @@ mod vector_operations;
 use self::constants::Constants;
 
 mod bomb;
+use self::bomb::*;
 mod player;
+use self::player::statistics::*;
 
 pub struct App {
     pub scene: Vec<Vec<State>>,
@@ -46,6 +48,8 @@ impl App {
         color_obstacle: [f32; 4],
         color_player1: [f32; 4],
         color_player2: [f32; 4],
+        color_bomb: [f32; 4],
+        color_fire: [f32; 4],
         offset: u8,
         players_amount: u8,
     ) -> Self {
@@ -65,6 +69,8 @@ impl App {
                 color_obstacle: color_obstacle,
                 color_player1: color_player1,
                 color_player2: color_player2,
+                color_bomb: color_bomb,
+                color_fire: color_fire,
                 size_x: 1,
                 size_y: 1,
                 offset: offset,
@@ -134,7 +140,7 @@ impl App {
                 self.settings.color_player2
             },
             controls: player::create_controls(i as u8),
-            statistics: player::Statistics::create(),
+            statistics: Statistics::create(),
         });
     }
 
@@ -157,6 +163,7 @@ impl App {
         let scene = &self.scene;
 
         let players = &self.players;
+        let bombs = &self.bombs;
 
         window.draw_2d(&e, |c, g| {
             clear(self.settings.color_border, g);
@@ -171,6 +178,12 @@ impl App {
 
                         _ => self.settings.color_background,
                     };
+
+                    for bomb in bombs {
+                        if [i as u8, j as u8] == bomb.get_position() {
+                            color = self.settings.color_bomb;
+                        }
+                    }
 
                     for player in players {
                         if [i as u8, j as u8] == player.get_position() {
@@ -211,7 +224,10 @@ impl App {
             } else if key == self.players[i].controls.bomb_button {
                 if true {
                     //also check for timers etc
-                    self.players[i].lay_bomb();
+                    if self.players[i].lay_bomb() {
+                        self.bombs
+                            .push(Bomb::create(self.players[i].get_position()));
+                    };
                 }
             }
         }

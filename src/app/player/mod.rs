@@ -1,23 +1,7 @@
 mod control;
+pub mod statistics;
+use self::statistics::*;
 use piston_window::Key;
-
-pub struct Statistics {
-    pub bomb_limit: u8,
-    pub active_bombs: u8,
-
-    pub fire_range: u8,
-}
-
-impl Statistics {
-    pub fn create() -> Self {
-        Statistics {
-            bomb_limit: 1,
-            active_bombs: 0,
-
-            fire_range: 1,
-        }
-    }
-}
 
 pub struct Player {
     pub position: [u8; 2],
