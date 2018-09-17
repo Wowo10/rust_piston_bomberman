@@ -205,7 +205,18 @@ impl App {
     pub fn update(&mut self, _args: UpdateArgs) {
         self.updateframes += 1;
 
-        self.exit = self.players.is_empty();
+        let players = &mut self.players;
+
+        self.bombs.retain(|ref x| {
+            if x.exploded() {
+                players[x.player_number as usize].bomb_exploded();
+                false
+            } else {
+                true
+            }
+        });
+
+        self.exit = players.is_empty();
     }
 
     pub fn handle_input(&mut self, key: Key) {
@@ -231,7 +242,7 @@ impl App {
                     //also check for timers etc
                     if self.players[i].lay_bomb() {
                         self.bombs
-                            .push(Bomb::create(self.players[i].get_position(), 5));
+                            .push(Bomb::create(self.players[i].get_position(), i as u8, 5));
                     };
                 }
             }

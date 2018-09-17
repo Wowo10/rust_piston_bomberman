@@ -35,6 +35,10 @@ impl Player {
         condition
     }
 
+    pub fn bomb_exploded(&mut self) {
+        self.statistics.active_bombs -= 1;
+    }
+
     pub fn get_position(&self) -> [u8; 2] {
         self.position
     }
