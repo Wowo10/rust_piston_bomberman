@@ -283,19 +283,28 @@ impl App {
                         self.players[i].move_right();
                     }
                 } else if key == self.players[i].controls.bomb_button {
-                    if true {
-                        //also check for timers etc
-                        if self.players[i].lay_bomb() {
+                    if self.players[i].lay_bomb() {
+                        if !self.is_bomb_in_position(self.players[i].get_position()) {
                             self.bombs.push(Bomb::create(
                                 self.players[i].get_position(),
                                 i as u8,
                                 5,
                             ));
-                        };
-                    }
+                        }
+                    };
                 }
             }
         }
+    }
+
+    fn is_bomb_in_position(&self, position: [u8; 2]) -> bool {
+        for bomb in &self.bombs {
+            if bomb.get_position() == position {
+                return true;
+            }
+        }
+
+        false
     }
 
     //Move checkings
