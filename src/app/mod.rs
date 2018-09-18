@@ -217,17 +217,30 @@ impl App {
     pub fn update(&mut self, _args: UpdateArgs) {
         self.updateframes += 1;
 
+        self.clear_bombs();
+
+        self.check_flame_collisions();
+
+        self.clear_flames();
+    }
+
+    fn clear_bombs(&mut self) {
         let players = &mut self.players;
+        let fire = &mut self.fires;
 
         self.bombs.retain(|ref x| {
             if x.exploded() {
                 players[x.player_number as usize].bomb_exploded();
+                fire.push(Fire::create(x.get_position(), 1));
                 false
             } else {
                 true
             }
         });
+    }
 
+    fn check_flame_collisions(&mut self) {
+        let players = &mut self.players;
         self.exit = true; //assume that we end the game
 
         for player in players {
@@ -244,35 +257,42 @@ impl App {
                 }
             }
         }
+    }
 
+    fn clear_flames(&mut self) {
         self.fires.retain(|ref x| !x.ended());
     }
 
     pub fn handle_input(&mut self, key: Key) {
         for i in 0..self.players.len() {
-            if key == self.players[i].controls.up_button {
-                if self.able_move_up(i) {
-                    self.players[i].move_up();
-                }
-            } else if key == self.players[i].controls.down_button {
-                if self.able_move_down(i) {
-                    self.players[i].move_down();
-                }
-            } else if key == self.players[i].controls.left_button {
-                if self.able_move_left(i) {
-                    self.players[i].move_left();
-                }
-            } else if key == self.players[i].controls.right_button {
-                if self.able_move_right(i) {
-                    self.players[i].move_right();
-                }
-            } else if key == self.players[i].controls.bomb_button {
-                if true {
-                    //also check for timers etc
-                    if self.players[i].lay_bomb() {
-                        self.bombs
-                            .push(Bomb::create(self.players[i].get_position(), i as u8, 5));
-                    };
+            if !self.players[i].dead {
+                if key == self.players[i].controls.up_button {
+                    if self.able_move_up(i) {
+                        self.players[i].move_up();
+                    }
+                } else if key == self.players[i].controls.down_button {
+                    if self.able_move_down(i) {
+                        self.players[i].move_down();
+                    }
+                } else if key == self.players[i].controls.left_button {
+                    if self.able_move_left(i) {
+                        self.players[i].move_left();
+                    }
+                } else if key == self.players[i].controls.right_button {
+                    if self.able_move_right(i) {
+                        self.players[i].move_right();
+                    }
+                } else if key == self.players[i].controls.bomb_button {
+                    if true {
+                        //also check for timers etc
+                        if self.players[i].lay_bomb() {
+                            self.bombs.push(Bomb::create(
+                                self.players[i].get_position(),
+                                i as u8,
+                                5,
+                            ));
+                        };
+                    }
                 }
             }
         }
