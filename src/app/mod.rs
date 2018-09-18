@@ -239,95 +239,117 @@ impl App {
 
                 fire.push(Fire::create([x_pos, y_pos], time));
 
-                for i in 1..(range + 1) {
-                    let updated_x_pos = x_pos as i8 - i;
-                    if updated_x_pos >= 0 {
-                        match scene[updated_x_pos as usize][y_pos as usize] {
-                            State::Free => {
-                                fire.push(Fire::create([updated_x_pos as u8, y_pos], time));
-                            }
-                            State::Block => {
-                                scene[updated_x_pos as usize][y_pos as usize] = State::Free;
-                                fire.push(Fire::create([updated_x_pos as u8, y_pos], time));
-                                break;
-                            }
-                            State::Obstacle => {
-                                break;
-                            }
-                        }
-                    } else {
-                        break;
-                    }
-                }
-
-                for i in 1..(range + 1) {
-                    let updated_x_pos = x_pos as i8 + i;
-                    if updated_x_pos < scene.len() as i8 {
-                        match scene[updated_x_pos as usize][y_pos as usize] {
-                            State::Free => {
-                                fire.push(Fire::create([updated_x_pos as u8, y_pos], time));
-                            }
-                            State::Block => {
-                                scene[updated_x_pos as usize][y_pos as usize] = State::Free;
-                                fire.push(Fire::create([updated_x_pos as u8, y_pos], time));
-                                break;
-                            }
-                            State::Obstacle => {
-                                break;
-                            }
-                        }
-                    } else {
-                        break;
-                    }
-                }
-
-                for i in 1..(range + 1) {
-                    let updated_y_pos = y_pos as i8 - i;
-                    if updated_y_pos >= 0 {
-                        match scene[x_pos as usize][updated_y_pos as usize] {
-                            State::Free => {
-                                fire.push(Fire::create([x_pos, updated_y_pos as u8], time));
-                            }
-                            State::Block => {
-                                scene[x_pos as usize][updated_y_pos as usize] = State::Free;
-                                fire.push(Fire::create([x_pos, updated_y_pos as u8], time));
-                                break;
-                            }
-                            State::Obstacle => {
-                                break;
-                            }
-                        }
-                    } else {
-                        break;
-                    }
-                }
-
-                for i in 1..(range + 1) {
-                    let updated_y_pos = y_pos as i8 + i;
-                    if updated_y_pos < scene[0].len() as i8 {
-                        match scene[x_pos as usize][updated_y_pos as usize] {
-                            State::Free => {
-                                fire.push(Fire::create([x_pos, updated_y_pos as u8], time));
-                            }
-                            State::Block => {
-                                scene[x_pos as usize][updated_y_pos as usize] = State::Free;
-                                fire.push(Fire::create([x_pos, updated_y_pos as u8], time));
-                                break;
-                            }
-                            State::Obstacle => {
-                                break;
-                            }
-                        }
-                    } else {
-                        break;
-                    }
-                }
+                App::fire_spread_left(scene, fire, range, x_pos as i8, y_pos, time);
+                App::fire_spread_right(scene, fire, range, x_pos as i8, y_pos, time);
+                App::fire_spread_up(scene, fire, range, x_pos, y_pos as i8, time);
+                App::fire_spread_down(scene, fire, range, x_pos, y_pos as i8, time);
 
                 false
             } else {
                 true
             }
         });
+    }
+
+    fn fire_spread_left(
+        scene: &mut Vec<Vec<State>>,
+        fire: &mut Vec<Fire>,
+        range: i8,
+        x_pos: i8,
+        y_pos: u8,
+        time: f32,
+    ) {
+        for i in 1..(range + 1) {
+            let updated_x_pos = x_pos - i;
+            if updated_x_pos >= 0 {
+                if App::match_tile(scene, fire, updated_x_pos as u8, y_pos, time) {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+    }
+
+    fn fire_spread_right(
+        scene: &mut Vec<Vec<State>>,
+        fire: &mut Vec<Fire>,
+        range: i8,
+        x_pos: i8,
+        y_pos: u8,
+        time: f32,
+    ) {
+        for i in 1..(range + 1) {
+            let updated_x_pos = x_pos as i8 + i;
+            if updated_x_pos < scene.len() as i8 {
+                if App::match_tile(scene, fire, updated_x_pos as u8, y_pos, time) {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+    }
+
+    fn fire_spread_up(
+        scene: &mut Vec<Vec<State>>,
+        fire: &mut Vec<Fire>,
+        range: i8,
+        x_pos: u8,
+        y_pos: i8,
+        time: f32,
+    ) {
+        for i in 1..(range + 1) {
+            let updated_y_pos = y_pos as i8 - i;
+            if updated_y_pos >= 0 {
+                if App::match_tile(scene, fire, x_pos, updated_y_pos as u8, time) {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+    }
+
+    fn fire_spread_down(
+        scene: &mut Vec<Vec<State>>,
+        fire: &mut Vec<Fire>,
+        range: i8,
+        x_pos: u8,
+        y_pos: i8,
+        time: f32,
+    ) {
+        for i in 1..(range + 1) {
+            let updated_y_pos = y_pos as i8 + i;
+            if updated_y_pos < scene[0].len() as i8 {
+                if App::match_tile(scene, fire, x_pos, updated_y_pos as u8, time) {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+    }
+
+    fn match_tile(
+        scene: &mut Vec<Vec<State>>,
+        fire: &mut Vec<Fire>,
+        x_pos: u8,
+        y_pos: u8,
+        time: f32,
+    ) -> bool {
+        match scene[x_pos as usize][y_pos as usize] {
+            State::Free => {
+                fire.push(Fire::create([x_pos, y_pos], time));
+                false
+            }
+            State::Block => {
+                scene[x_pos as usize][y_pos as usize] = State::Free;
+                fire.push(Fire::create([x_pos, y_pos], time));
+                true
+            }
+            State::Obstacle => true,
+        }
     }
 
     fn check_flame_collisions(&mut self) {
