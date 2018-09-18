@@ -227,11 +227,102 @@ impl App {
     fn clear_bombs(&mut self) {
         let players = &mut self.players;
         let fire = &mut self.fires;
+        let scene = &mut self.scene;
 
-        self.bombs.retain(|ref x| {
-            if x.exploded() {
-                players[x.player_number as usize].bomb_exploded();
-                fire.push(Fire::create(x.get_position(), 1));
+        self.bombs.retain(|ref bomb| {
+            if bomb.exploded() {
+                players[bomb.player_number as usize].bomb_exploded();
+
+                let [x_pos, y_pos] = bomb.get_position();
+                let range = 1; //take me from playerstats
+                let time = 0.5; //also
+
+                fire.push(Fire::create([x_pos, y_pos], time));
+
+                for i in 1..(range + 1) {
+                    let updated_x_pos = x_pos as i8 - i;
+                    if updated_x_pos >= 0 {
+                        match scene[updated_x_pos as usize][y_pos as usize] {
+                            State::Free => {
+                                fire.push(Fire::create([updated_x_pos as u8, y_pos], time));
+                            }
+                            State::Block => {
+                                scene[updated_x_pos as usize][y_pos as usize] = State::Free;
+                                fire.push(Fire::create([updated_x_pos as u8, y_pos], time));
+                                break;
+                            }
+                            State::Obstacle => {
+                                break;
+                            }
+                        }
+                    } else {
+                        break;
+                    }
+                }
+
+                for i in 1..(range + 1) {
+                    let updated_x_pos = x_pos as i8 + i;
+                    if updated_x_pos < scene.len() as i8 {
+                        match scene[updated_x_pos as usize][y_pos as usize] {
+                            State::Free => {
+                                fire.push(Fire::create([updated_x_pos as u8, y_pos], time));
+                            }
+                            State::Block => {
+                                scene[updated_x_pos as usize][y_pos as usize] = State::Free;
+                                fire.push(Fire::create([updated_x_pos as u8, y_pos], time));
+                                break;
+                            }
+                            State::Obstacle => {
+                                break;
+                            }
+                        }
+                    } else {
+                        break;
+                    }
+                }
+
+                for i in 1..(range + 1) {
+                    let updated_y_pos = y_pos as i8 - i;
+                    if updated_y_pos >= 0 {
+                        match scene[x_pos as usize][updated_y_pos as usize] {
+                            State::Free => {
+                                fire.push(Fire::create([x_pos, updated_y_pos as u8], time));
+                            }
+                            State::Block => {
+                                scene[x_pos as usize][updated_y_pos as usize] = State::Free;
+                                fire.push(Fire::create([x_pos, updated_y_pos as u8], time));
+                                break;
+                            }
+                            State::Obstacle => {
+                                break;
+                            }
+                        }
+                    } else {
+                        break;
+                    }
+                }
+
+                for i in 1..(range + 1) {
+                    let updated_y_pos = y_pos as i8 + i;
+                    if updated_y_pos < scene[0].len() as i8 {
+                        match scene[x_pos as usize][updated_y_pos as usize] {
+                            State::Free => {
+                                fire.push(Fire::create([x_pos, updated_y_pos as u8], time));
+                            }
+                            State::Block => {
+                                scene[x_pos as usize][updated_y_pos as usize] = State::Free;
+                                fire.push(Fire::create([x_pos, updated_y_pos as u8], time));
+                                break;
+                            }
+                            State::Obstacle => {
+                                break;
+                            }
+                        }
+                    } else {
+                        break;
+                    }
+                }
+
                 false
             } else {
                 true
@@ -288,7 +379,7 @@ impl App {
                             self.bombs.push(Bomb::create(
                                 self.players[i].get_position(),
                                 i as u8,
-                                5,
+                                2.0,
                             ));
                         }
                     };

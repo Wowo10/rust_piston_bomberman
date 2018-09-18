@@ -4,12 +4,12 @@ pub struct Bomb {
     pub fire_range: u8,
     pub boom_timer: Timer,
     pub position: [u8; 2],
-    pub time_limit: u32,
+    pub time_limit: f32,
     pub player_number: u8,
 }
 
 impl Bomb {
-    pub fn create(position: [u8; 2], player_number: u8, time_limit: u32) -> Self {
+    pub fn create(position: [u8; 2], player_number: u8, time_limit: f32) -> Self {
         Bomb {
             fire_range: 1,
             boom_timer: Timer::create(),
@@ -20,11 +20,11 @@ impl Bomb {
     }
 
     pub fn exploded(&self) -> bool {
-        self.boom_timer.did_pass((self.time_limit * 1000) as u64)
+        self.boom_timer.did_pass((self.time_limit * 1000.0) as u64)
     }
 
     pub fn get_percentage(&self) -> f64 {
-        self.boom_timer.progress((self.time_limit * 1000) as u64)
+        self.boom_timer.progress((self.time_limit * 1000.0) as u64)
     }
 
     pub fn get_position(&self) -> [u8; 2] {
