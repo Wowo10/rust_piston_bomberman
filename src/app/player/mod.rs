@@ -7,6 +7,7 @@ pub struct Player {
     pub position: [u8; 2],
     pub controls: control::Control,
     pub color: [f32; 4],
+    pub dead: bool,
 
     pub statistics: Statistics,
 }
@@ -33,6 +34,10 @@ impl Player {
         };
 
         condition
+    }
+
+    pub fn die(&mut self){
+        self.dead = true;
     }
 
     pub fn bomb_exploded(&mut self) {

@@ -22,6 +22,8 @@ use self::vector_operations::*;
 
 mod bomb;
 use self::bomb::*;
+mod fire;
+use self::fire::*;
 mod player;
 use self::player::statistics::*;
 
@@ -35,7 +37,8 @@ pub struct App {
     pub exit: bool,
 
     pub players: Vec<player::Player>,
-    pub bombs: Vec<bomb::Bomb>,
+    pub bombs: Vec<Bomb>,
+    pub fires: Vec<Fire>,
     pub settings: Constants,
 }
 
@@ -62,6 +65,7 @@ impl App {
             exit: false,
             players: Vec::new(),
             bombs: Vec::new(),
+            fires: Vec::new(),
 
             settings: Constants {
                 color_background: color_background,
@@ -140,6 +144,7 @@ impl App {
             } else {
                 self.settings.color_player2
             },
+            dead: false,
             controls: player::create_controls(i as u8),
             statistics: Statistics::create(),
         });
@@ -165,6 +170,7 @@ impl App {
 
         let players = &self.players;
         let bombs = &self.bombs;
+        let fires = &self.fires;
 
         window.draw_2d(&e, |c, g| {
             clear(self.settings.color_border, g);
@@ -187,6 +193,12 @@ impl App {
                                 self.settings.color_fire,
                                 bomb.get_percentage(),
                             );
+                        }
+                    }
+
+                    for fire in fires {
+                        if [i as u8, j as u8] == fire.get_position() {
+                            color = self.settings.color_fire;
                         }
                     }
 
@@ -216,7 +228,24 @@ impl App {
             }
         });
 
-        self.exit = players.is_empty();
+        self.exit = true; //assume that we end the game
+
+        for player in players {
+            if !player.dead {
+                if self.exit {
+                    //and if there is any player not dead change to false
+                    self.exit = false;
+                }
+
+                for fire in &self.fires {
+                    if player.get_position() == fire.get_position() {
+                        player.die();
+                    }
+                }
+            }
+        }
+
+        self.fires.retain(|ref x| !x.ended());
     }
 
     pub fn handle_input(&mut self, key: Key) {

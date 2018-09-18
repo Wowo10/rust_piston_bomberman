@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 pub fn translate_to_signed_vector(vector: [u8; 2]) -> [i8; 2] {
     [vector[0] as i8, vector[1] as i8]
 }

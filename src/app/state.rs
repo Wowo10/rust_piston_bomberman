@@ -2,7 +2,6 @@ use std::fmt;
 
 pub enum State {
     Free,
-    Fire,
     Obstacle,
     Block,
 }
@@ -22,7 +21,6 @@ impl fmt::Debug for State {
             "{}",
             match self {
                 State::Free => "Free",
-                State::Fire => "Fire",
                 State::Block => "Block",
                 State::Obstacle => "Obstacle",
             }
