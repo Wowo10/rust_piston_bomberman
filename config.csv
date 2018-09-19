@@ -2,10 +2,10 @@ Setting;Value;Comment
 width;600;
 height;400
 offset;2;should be even
-background_color;0.0,0.0,0.0;BLACK
-border_color;0.0,1.0,0.0;GREEN
-block_color;0.8,0.6,0.0;
-obstacle_color;0.8,0.8,0.8;GREY
+background_color;0.0,0.8,0.0;DARKGREEN
+border_color;0.0,0.0,0.0;BLACK
+block_color;0.8,0.5,0.3;BROWNANGE
+obstacle_color;0.3,0.3,0.3;GREY
 player1_color;0.0,0.0,1.0;BLUE
 player2_color;0.8,0.0,0.8;PINK
 bomb_color;1.0,1.0,1.0;WHITE
