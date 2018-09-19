@@ -1,6 +1,7 @@
 mod control;
 pub mod statistics;
 use self::statistics::*;
+use app::powerup;
 use piston_window::Key;
 
 pub struct Player {
@@ -34,6 +35,21 @@ impl Player {
         };
 
         condition
+    }
+
+    pub fn get_fire_range(self) -> u8{
+        self.statistics.fire_range
+    }
+
+    pub fn collect(&mut self, powerup_type: &powerup::Type) {
+        match powerup_type {
+            powerup::Type::BonusBomb => {
+                self.statistics.bomb_limit += 1;
+            }
+            powerup::Type::BonusFire => {
+                self.statistics.fire_range += 1;
+            }
+        }
     }
 
     pub fn die(&mut self) {

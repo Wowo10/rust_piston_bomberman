@@ -6,6 +6,7 @@ pub enum Type {
 pub struct Powerup {
     pub position: [u8; 2],
     pub powerup_type: Type,
+    pub collected: bool,
 }
 
 impl Powerup {
@@ -13,7 +14,12 @@ impl Powerup {
         Powerup {
             position: position,
             powerup_type: powerup_type,
+            collected: false,
         }
+    }
+
+    pub fn collect(&mut self) {
+        self.collected = true;
     }
 
     pub fn get_type(&self) -> &Type {

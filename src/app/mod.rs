@@ -26,7 +26,7 @@ mod fire;
 use self::fire::*;
 mod player;
 use self::player::statistics::*;
-mod powerup;
+pub mod powerup;
 use self::powerup::*;
 
 pub struct App {
@@ -237,9 +237,9 @@ impl App {
 
         self.clear_bombs();
 
-        self.check_flame_collisions();
+        self.check_collisions();
 
-        self.clear_flames();
+        self.clear_queues();
     }
 
     fn clear_bombs(&mut self) {
@@ -253,8 +253,8 @@ impl App {
                 players[bomb.player_number as usize].bomb_exploded();
 
                 let [x_pos, y_pos] = bomb.get_position();
-                let range = 1; //take me from playerstats
-                let time = 0.5; //also
+                let range = players[bomb.player_number as usize].statistics.fire_range as i8;
+                let time = 0.5; //get from config?
 
                 fire.push(Fire::create([x_pos, y_pos], time));
 
@@ -392,11 +392,10 @@ impl App {
         }
     }
 
-    fn check_flame_collisions(&mut self) {
-        let players = &mut self.players;
+    fn check_collisions(&mut self) {
         self.exit = true; //assume that we end the game
 
-        for player in players {
+        for player in &mut self.players {
             if !player.dead {
                 if self.exit {
                     //and if there is any player not dead change to false
@@ -408,12 +407,20 @@ impl App {
                         player.die();
                     }
                 }
+
+                for powerup in &mut self.powerups {
+                    if player.get_position() == powerup.get_position() {
+                        player.collect(powerup.get_type());
+                        powerup.collect();
+                    }
+                }
             }
         }
     }
 
-    fn clear_flames(&mut self) {
-        self.fires.retain(|ref x| !x.ended());
+    fn clear_queues(&mut self) {
+        self.fires.retain(|ref fire| !fire.ended());
+        self.powerups.retain(|ref powerup| !powerup.collected);
     }
 
     pub fn handle_input(&mut self, key: Key) {
