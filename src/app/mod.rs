@@ -208,8 +208,8 @@ impl App {
                     for powerup in powerups {
                         if [i as u8, j as u8] == powerup.get_position() {
                             color = match powerup.get_type() {
-                                powerup::Type::bonus_bomb => self.settings.color_powerup_bomb,
-                                powerup::Type::bonus_fire => self.settings.color_powerup_fire,
+                                powerup::Type::BonusBomb => self.settings.color_powerup_bomb,
+                                powerup::Type::BonusFire => self.settings.color_powerup_fire,
                             };
                         }
                     }
@@ -380,9 +380,9 @@ impl App {
                     powerups.push(Powerup::create(
                         [x_pos, y_pos],
                         if choose {
-                            powerup::Type::bonus_bomb
+                            powerup::Type::BonusBomb
                         } else {
-                            powerup::Type::bonus_fire
+                            powerup::Type::BonusFire
                         },
                     ));
                 }

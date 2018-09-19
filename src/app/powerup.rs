@@ -1,6 +1,6 @@
 pub enum Type {
-    bonus_bomb,
-    bonus_fire,
+    BonusBomb,
+    BonusFire,
 }
 
 pub struct Powerup {
