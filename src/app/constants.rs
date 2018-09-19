@@ -7,6 +7,8 @@ pub struct Constants {
     pub color_player2: [f32; 4],
     pub color_bomb: [f32; 4],
     pub color_fire: [f32; 4],
+    pub color_powerup_bomb: [f32; 4],
+    pub color_powerup_fire: [f32; 4],
     pub size_x: u32,
     pub size_y: u32,
     pub offset: u8,

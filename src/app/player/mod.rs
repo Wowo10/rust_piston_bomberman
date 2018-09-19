@@ -36,8 +36,9 @@ impl Player {
         condition
     }
 
-    pub fn die(&mut self){
+    pub fn die(&mut self) {
         self.dead = true;
+        self.color = [0.0, 0.0, 0.0, 0.0];
     }
 
     pub fn bomb_exploded(&mut self) {

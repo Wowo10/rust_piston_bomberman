@@ -26,6 +26,8 @@ mod fire;
 use self::fire::*;
 mod player;
 use self::player::statistics::*;
+mod powerup;
+use self::powerup::*;
 
 pub struct App {
     pub scene: Vec<Vec<State>>,
@@ -39,6 +41,7 @@ pub struct App {
     pub players: Vec<player::Player>,
     pub bombs: Vec<Bomb>,
     pub fires: Vec<Fire>,
+    pub powerups: Vec<Powerup>,
     pub settings: Constants,
 }
 
@@ -54,6 +57,8 @@ impl App {
         color_player2: [f32; 4],
         color_bomb: [f32; 4],
         color_fire: [f32; 4],
+        color_powerup_bomb: [f32; 4],
+        color_powerup_fire: [f32; 4],
         offset: u8,
         players_amount: u8,
     ) -> Self {
@@ -66,6 +71,7 @@ impl App {
             players: Vec::new(),
             bombs: Vec::new(),
             fires: Vec::new(),
+            powerups: Vec::new(),
 
             settings: Constants {
                 color_background: color_background,
@@ -76,6 +82,8 @@ impl App {
                 color_player2: color_player2,
                 color_bomb: color_bomb,
                 color_fire: color_fire,
+                color_powerup_bomb: color_powerup_bomb,
+                color_powerup_fire: color_powerup_fire,
                 size_x: 1,
                 size_y: 1,
                 offset: offset,
@@ -171,6 +179,7 @@ impl App {
         let players = &self.players;
         let bombs = &self.bombs;
         let fires = &self.fires;
+        let powerups = &self.powerups;
 
         window.draw_2d(&e, |c, g| {
             clear(self.settings.color_border, g);
@@ -193,6 +202,15 @@ impl App {
                                 self.settings.color_fire,
                                 bomb.get_percentage(),
                             );
+                        }
+                    }
+
+                    for powerup in powerups {
+                        if [i as u8, j as u8] == powerup.get_position() {
+                            color = match powerup.get_type() {
+                                powerup::Type::bonus_bomb => self.settings.color_powerup_bomb,
+                                powerup::Type::bonus_fire => self.settings.color_powerup_fire,
+                            };
                         }
                     }
 
@@ -228,6 +246,7 @@ impl App {
         let players = &mut self.players;
         let fire = &mut self.fires;
         let scene = &mut self.scene;
+        let powerups = &mut self.powerups;
 
         self.bombs.retain(|ref bomb| {
             if bomb.exploded() {
@@ -239,10 +258,10 @@ impl App {
 
                 fire.push(Fire::create([x_pos, y_pos], time));
 
-                App::fire_spread_left(scene, fire, range, x_pos as i8, y_pos, time);
-                App::fire_spread_right(scene, fire, range, x_pos as i8, y_pos, time);
-                App::fire_spread_up(scene, fire, range, x_pos, y_pos as i8, time);
-                App::fire_spread_down(scene, fire, range, x_pos, y_pos as i8, time);
+                App::fire_spread_left(scene, fire, powerups, range, x_pos as i8, y_pos, time);
+                App::fire_spread_right(scene, fire, powerups, range, x_pos as i8, y_pos, time);
+                App::fire_spread_up(scene, fire, powerups, range, x_pos, y_pos as i8, time);
+                App::fire_spread_down(scene, fire, powerups, range, x_pos, y_pos as i8, time);
 
                 false
             } else {
@@ -254,6 +273,7 @@ impl App {
     fn fire_spread_left(
         scene: &mut Vec<Vec<State>>,
         fire: &mut Vec<Fire>,
+        powerups: &mut Vec<Powerup>,
         range: i8,
         x_pos: i8,
         y_pos: u8,
@@ -262,7 +282,7 @@ impl App {
         for i in 1..(range + 1) {
             let updated_x_pos = x_pos - i;
             if updated_x_pos >= 0 {
-                if App::match_tile(scene, fire, updated_x_pos as u8, y_pos, time) {
+                if App::match_tile(scene, fire, powerups, updated_x_pos as u8, y_pos, time) {
                     break;
                 }
             } else {
@@ -274,6 +294,7 @@ impl App {
     fn fire_spread_right(
         scene: &mut Vec<Vec<State>>,
         fire: &mut Vec<Fire>,
+        powerups: &mut Vec<Powerup>,
         range: i8,
         x_pos: i8,
         y_pos: u8,
@@ -282,7 +303,7 @@ impl App {
         for i in 1..(range + 1) {
             let updated_x_pos = x_pos as i8 + i;
             if updated_x_pos < scene.len() as i8 {
-                if App::match_tile(scene, fire, updated_x_pos as u8, y_pos, time) {
+                if App::match_tile(scene, fire, powerups, updated_x_pos as u8, y_pos, time) {
                     break;
                 }
             } else {
@@ -294,6 +315,7 @@ impl App {
     fn fire_spread_up(
         scene: &mut Vec<Vec<State>>,
         fire: &mut Vec<Fire>,
+        powerups: &mut Vec<Powerup>,
         range: i8,
         x_pos: u8,
         y_pos: i8,
@@ -302,7 +324,7 @@ impl App {
         for i in 1..(range + 1) {
             let updated_y_pos = y_pos as i8 - i;
             if updated_y_pos >= 0 {
-                if App::match_tile(scene, fire, x_pos, updated_y_pos as u8, time) {
+                if App::match_tile(scene, fire, powerups, x_pos, updated_y_pos as u8, time) {
                     break;
                 }
             } else {
@@ -314,6 +336,7 @@ impl App {
     fn fire_spread_down(
         scene: &mut Vec<Vec<State>>,
         fire: &mut Vec<Fire>,
+        powerups: &mut Vec<Powerup>,
         range: i8,
         x_pos: u8,
         y_pos: i8,
@@ -322,7 +345,7 @@ impl App {
         for i in 1..(range + 1) {
             let updated_y_pos = y_pos as i8 + i;
             if updated_y_pos < scene[0].len() as i8 {
-                if App::match_tile(scene, fire, x_pos, updated_y_pos as u8, time) {
+                if App::match_tile(scene, fire, powerups, x_pos, updated_y_pos as u8, time) {
                     break;
                 }
             } else {
@@ -334,10 +357,15 @@ impl App {
     fn match_tile(
         scene: &mut Vec<Vec<State>>,
         fire: &mut Vec<Fire>,
+        powerups: &mut Vec<Powerup>,
         x_pos: u8,
         y_pos: u8,
         time: f32,
     ) -> bool {
+        let mut rng = thread_rng();
+
+        let rand_num: u8 = rng.gen();
+
         match scene[x_pos as usize][y_pos as usize] {
             State::Free => {
                 fire.push(Fire::create([x_pos, y_pos], time));
@@ -346,6 +374,18 @@ impl App {
             State::Block => {
                 scene[x_pos as usize][y_pos as usize] = State::Free;
                 fire.push(Fire::create([x_pos, y_pos], time));
+
+                if rand_num % 5 == 0 {
+                    let choose: bool = rng.gen();
+                    powerups.push(Powerup::create(
+                        [x_pos, y_pos],
+                        if choose {
+                            powerup::Type::bonus_bomb
+                        } else {
+                            powerup::Type::bonus_fire
+                        },
+                    ));
+                }
                 true
             }
             State::Obstacle => true,

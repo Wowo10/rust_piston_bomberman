@@ -37,6 +37,8 @@ fn main() {
         config.read_color("player2_color"),
         config.read_color("bomb_color"),
         config.read_color("fire_color"),
+        config.read_color("powerup_bomb_color"),
+        config.read_color("powerup_fire_color"),
         config.read("offset").parse::<u8>().unwrap(),
         config.read("players").parse::<u8>().unwrap(),
     );
