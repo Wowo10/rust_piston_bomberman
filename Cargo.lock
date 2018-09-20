@@ -1057,7 +1057,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "wowo_tetris"
+name = "wowo_bomberman"
 version = "0.0.9"
 dependencies = [
  "find_folder 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",

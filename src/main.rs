@@ -7,6 +7,8 @@ use piston_window::*;
 mod app;
 use app::config;
 
+mod configuration;
+
 use app::timers::*;
 
 fn main() {
@@ -77,4 +79,7 @@ fn main() {
     );
 
     println!("\nGame Over!");
+
+    configuration::set(1);
+    println!("config: {}", configuration::read());
 }

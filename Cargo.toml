@@ -1,10 +1,10 @@
 [package]
-name = "wowo_tetris"
+name = "wowo_bomberman"
 version = "0.0.9"
 authors = ["Wowo"]
 
 [[bin]]
-name = "wowo_tetris"
+name = "wowo_bomberman"
 path = "src/main.rs"
 
 [dependencies]
