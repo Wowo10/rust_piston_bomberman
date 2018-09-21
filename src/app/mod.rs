@@ -26,6 +26,8 @@ mod fire;
 use self::fire::*;
 mod player;
 use self::player::statistics::*;
+mod monster;
+use self::monster::*;
 pub mod powerup;
 use self::powerup::*;
 
@@ -39,6 +41,7 @@ pub struct App {
     pub exit: bool,
 
     pub players: Vec<player::Player>,
+    pub monsters: Vec<Monster>,
     pub bombs: Vec<Bomb>,
     pub fires: Vec<Fire>,
     pub powerups: Vec<Powerup>,
@@ -69,6 +72,7 @@ impl App {
             timers: timers::new_timers(),
             exit: false,
             players: Vec::new(),
+            monsters: Vec::new(),
             bombs: Vec::new(),
             fires: Vec::new(),
             powerups: Vec::new(),
@@ -133,6 +137,7 @@ impl App {
                         }
                         State::Free
                     }
+                    '5' => State::Free,
                     _ => State::Free, //'0'
                 });
             }
@@ -156,6 +161,10 @@ impl App {
             controls: player::create_controls(i as u8),
             statistics: Statistics::create(),
         });
+    }
+
+    fn add_monster(&mut self, monster_position: [u8; 2]) {
+        self.monsters.push(Monster::create(monster_position));
     }
 
     pub fn render(&mut self, window: &mut PistonWindow, e: Input, _args: RenderArgs) {
